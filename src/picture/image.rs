@@ -1,4 +1,5 @@
 use super::imagedata::ImageData;
+use super::ImageCollectionElement;
 
 pub struct Image {
 	/* 	Represents an image inside the software, already decoded. 
@@ -9,12 +10,20 @@ pub struct Image {
 	width: u32,
 	height: u32,
 	data: ImageData,
-	}
+}
+
+impl ImageCollectionElement for Image {
+	fn get_display_name(&self) -> String { self.name.clone() }
+	fn get_file_name(&self) -> String { self.path.clone() }
+}
 
 impl Image {
 	pub fn create_empty(name: &str, width: u32, height: u32) -> Image {
+		let mut lpath = String::from("@");
+		lpath.push_str(name);
+
 		Image{name: String::from(name), width: width, height: height, 
-			path: String::default(), data: ImageData::create_empty((width*height) as usize) }
+			path: lpath, data: ImageData::create_empty((width*height) as usize) }
 	}
 
 	pub fn create_from_data(name: &str, file: &str, width: u32, height: u32, data: &[u32]) -> Image {
