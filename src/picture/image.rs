@@ -49,3 +49,20 @@ impl Image {
 	pub fn get_height(&self) -> u32 { self.height }
 
 }
+
+/* Tests for Image class */
+#[cfg(test)]
+mod tests {
+
+	use super::*;
+
+	#[test]
+	fn test_parameters() {
+		let i = Image::create_empty("image_test", 800, 600);
+		
+		assert_eq!(i.get_width(), 800);
+		assert_eq!(i.get_height(), 600);
+		assert_eq!(i.name, "image_test");
+
+	}
+}
