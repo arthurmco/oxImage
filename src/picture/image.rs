@@ -22,27 +22,29 @@ impl Image {
 			height: height, data: ImageData::create_from_data(data, (width*height) as usize)}
 	}
 
-	pub fn resize(&self, nwidth: u32, nheight: u32) {
+	pub fn resize(&mut self, nwidth: u32, nheight: u32) {
 		let mut idata = ImageData::create_empty((nwidth*nheight) as usize);
 		let mut x = 0;
 		let mut y = 0;
 
 		for pixel in &self.data.bdata {
+			
 			if y < self.height {
-				idata.bdata.push(*pixel);
+				idata.bdata[(y*nwidth + x) as usize] = *pixel;
 				x += 1;
 			}
-
+			
 			if x == self.width {
 				while x < nwidth {
-					idata.bdata.push(0);
 					x += 1;
 				}
+				
 				y += 1;
 				x = 0;
 			}
 		}
-		
+
+		self.data = idata;		
 	}
 
 	pub fn get_width(&self) -> u32 { self.width }
@@ -64,5 +66,18 @@ mod tests {
 		assert_eq!(i.get_height(), 600);
 		assert_eq!(i.name, "image_test");
 
+	}
+
+	#[test]
+	fn test_resize() {
+		let mut data = vec![0xff0000ff];
+		data.resize(1024, 0xff0000ff);
+
+		let mut i = Image::create_from_data("name_test", "name_test", 32, 32, &data);
+		assert_eq!(0xff0000ff, i.data.bdata[48], "Not correctly loaded");
+
+		i.resize(64, 64);
+		assert_ne!(0xff0000ff, i.data.bdata[48], "Not correctly resized: not even resized");
+		assert_eq!(0x0, i.data.bdata[48], "Not correctly resized (garbage)");
 	}
 }

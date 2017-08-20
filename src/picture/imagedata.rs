@@ -73,4 +73,22 @@ mod tests {
 			"Wrong behavior: non-specified pixels should be transparent (0), they are {}", img.bdata[0]);
 	}
 
+	#[test]
+	fn test_imagedata_set() {
+		let mut data = vec![0xff0000ff];
+		data.resize(1024, 0xff0000ff);
+
+		let mut img = ImageData::create_from_data(&data, 1024);
+
+		assert_eq!(0xff0000ff, img.bdata[32]);
+
+		let mut data = vec![0x0000ffff];
+		data.resize(1024, 0x0000ffff);
+
+		img.set_data(&data);
+
+		assert_ne!(0xff0000ff, img.bdata[32], "Data not changed");
+		assert_eq!(0x0000ffff, img.bdata[32], "Garbage in data");	
+	}
+
 }
