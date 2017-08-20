@@ -1,27 +1,4 @@
-pub struct ImageData {
-	/* Represents a raw image data */
-	bdata: Vec<u32>
-}
-
-impl ImageData {
-	/* Create an empty data */
-	pub fn create_empty() -> ImageData {
-		ImageData{bdata: Vec::new()}
-	}
-
-	/* 	Creates data from a pixel array
-		Clones it so we maintain the reference */
-	pub fn create_from_data(data: &[u32]) -> ImageData {
-		let mut vbdata : Vec<u32> = Vec::new();
-		
-		let dd = data.clone();
-		for &it in dd {
-			vbdata.push(it);
-		}
-
-		ImageData{bdata: vbdata}
-	}
-}
+use super::imagedata::ImageData;
 
 pub struct Image {
 	/* 	Represents an image inside the software, already decoded. 
@@ -37,12 +14,35 @@ pub struct Image {
 impl Image {
 	pub fn create_empty(name: &str, width: u32, height: u32) -> Image {
 		Image{name: String::from(name), width: width, height: height, 
-			path: String::default(), data: ImageData::create_empty() }
+			path: String::default(), data: ImageData::create_empty((width*height) as usize) }
 	}
 
 	pub fn create_from_data(name: &str, file: &str, width: u32, height: u32, data: &[u32]) -> Image {
 		Image{path: String::from(file), name: String::from(name), width: width, 
-			height: height, data: ImageData::create_from_data(data)}
+			height: height, data: ImageData::create_from_data(data, (width*height) as usize)}
+	}
+
+	pub fn resize(&self, nwidth: u32, nheight: u32) {
+		let mut idata = ImageData::create_empty((nwidth*nheight) as usize);
+		let mut x = 0;
+		let mut y = 0;
+
+		for pixel in &self.data.bdata {
+			if y < self.height {
+				idata.bdata.push(*pixel);
+				x += 1;
+			}
+
+			if x == self.width {
+				while x < nwidth {
+					idata.bdata.push(0);
+					x += 1;
+				}
+				y += 1;
+				x = 0;
+			}
+		}
+		
 	}
 
 	pub fn get_width(&self) -> u32 { self.width }
