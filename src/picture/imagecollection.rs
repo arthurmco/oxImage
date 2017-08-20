@@ -76,11 +76,12 @@ mod tests {
 
 		let im1 = Image::create_empty("img1", 16, 16);
 		let im2 = Image::create_empty("img2", 20, 20);
+		let im1path = im1.path.clone();
 
 		ic.add_element(ImageItem(im1));
 		ic.add_element(ImageItem(im2));
 
-		let iim1 = if let Some(iopt) = ic.get_element("@img1") {
+		let iim1 = if let Some(iopt) = ic.get_element(&im1path) {
 			if let ImageItem(ref it) = *iopt {
 				it
 			} else {
@@ -91,7 +92,7 @@ mod tests {
 		};
 
 		assert_eq!(16, iim1.get_width());
-		assert_eq!("@img1", iim1.path);
+		assert_eq!(im1path, iim1.path);
 	}
 
 	#[test]
@@ -100,13 +101,16 @@ mod tests {
 
 		let im1 = Image::create_empty("img1", 16, 16);
 		let im2 = Image::create_empty("img2", 20, 20);
+		let im1path = im1.path.clone();
+		let im2path = im2.path.clone();
 
 		ic.add_element(ImageItem(im1));
 		ic.add_element(ImageItem(im2));
-		assert_eq!(true, ic.get_element("@img1").is_some());
+		assert_eq!(true, ic.get_element(&im1path).is_some());
 
-		ic.remove_element("@img1");
-		assert_eq!(true, ic.get_element("@img1").is_none());
+		ic.remove_element(&im1path);
+		assert_eq!(true, ic.get_element(&im1path).is_none());
+		assert_eq!(true, ic.get_element(&im2path).is_some());
 	}
 }
 
