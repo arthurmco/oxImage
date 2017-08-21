@@ -76,6 +76,7 @@ impl ImageCollectionList {
 	}
 }
 
+/* Tests for image collection struct */
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -159,8 +160,6 @@ mod tests {
 				   } else if img.path == pvec[1] {
 					   bvec[1] = true;
 				   }
-
-
 			   },
                _ => panic!("Unexistant type for this list!")
 			};
