@@ -1,11 +1,14 @@
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::collections::hash_map::Values;
 use super::{ImageCollectionElement, ImageCollectionItem, Image};
 
-pub struct ImageCollectionList<> {
+pub struct ImageCollectionList {
 	/*	Represents an image collection */
 	pub name: String,
 
-	items: HashMap<String, ImageCollectionItem>	
+	items: HashMap<String, ImageCollectionItem>,
+	
 }
 
 impl ImageCollectionElement for ImageCollectionList {
@@ -13,9 +16,32 @@ impl ImageCollectionElement for ImageCollectionList {
 	fn get_file_name(&self) -> String { self.name.clone() }
 }
 
+pub struct ImageCollectionListIter<'a> {
+	/* Iterator over an image collection */
+	d: &'a ImageCollectionList,
+	val: Values<'a, String, ImageCollectionItem>
+}
+
+impl<'a> ImageCollectionListIter<'a> {
+	pub fn create(l: &ImageCollectionList) -> ImageCollectionListIter {
+		ImageCollectionListIter{d: l, val: l.items.values()}
+	}
+}
+
+impl<'a> Iterator for ImageCollectionListIter<'a> {
+	type Item = &'a ImageCollectionItem;
+	
+	fn next(&mut self) -> Option<Self::Item> {
+		self.val.next()
+	}
+
+	
+}
+
 impl ImageCollectionList {
 	pub fn create(name: &str) -> ImageCollectionList {
 		ImageCollectionList{items: HashMap::new(), name: String::from(name)}
+		
 	}
 
 	pub fn add_element(&mut self, el: ImageCollectionItem) {
@@ -41,15 +67,13 @@ impl ImageCollectionList {
 		self.items.remove(filename);
 	}
 
-	pub fn next(&mut self) -> Option<&ImageCollectionItem> {
-		self.items.values().next()
-	}
+	pub fn iterator(&self) -> ImageCollectionListIter<>{
+		ImageCollectionListIter::create(self)
+	}	
 
 	pub fn count(&self) -> usize {
 		self.items.len()
 	}
-
-	
 }
 
 #[cfg(test)]
@@ -111,6 +135,39 @@ mod tests {
 		ic.remove_element(&im1path);
 		assert_eq!(true, ic.get_element(&im1path).is_none());
 		assert_eq!(true, ic.get_element(&im2path).is_some());
+	}
+
+	#[test]
+	fn test_image_collection_iterate() {
+		let mut ic = ImageCollectionList::create("list");
+
+		let im1 = Image::create_empty("img1", 16, 16);
+		let im2 = Image::create_empty("img2", 20, 20);
+
+		let pvec = vec![im1.path.clone(), im2.path.clone()];
+		let mut bvec = vec![false, false];
+
+		ic.add_element(ImageItem(im1));
+		ic.add_element(ImageItem(im2));
+
+		let mut it = ic.iterator();
+        for item in it {
+        	match item {
+               &ImageCollectionItem::ImageItem(ref img) => {
+				   if img.path == pvec[0] {
+					   bvec[0] = true;
+				   } else if img.path == pvec[1] {
+					   bvec[1] = true;
+				   }
+
+
+			   },
+               _ => panic!("Unexistant type for this list!")
+			};
+		}
+
+		assert_eq!(true, bvec[0]);
+		assert_eq!(true, bvec[1]);
 	}
 }
 
