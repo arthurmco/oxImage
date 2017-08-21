@@ -31,7 +31,8 @@ impl Image {
 			height: height, data: ImageData::create_from_data(data, (width*height) as usize)}
 	}
 
-	pub fn resize(&mut self, nwidth: u32, nheight: u32) {
+	pub fn resize_area(&mut self, nwidth: u32, nheight: u32) {
+		/* Resize the image area. It won't resiz any data */
 		let mut idata = ImageData::create_empty((nwidth*nheight) as usize);
 		let mut x = 0;
 		let mut y = 0;
@@ -55,6 +56,7 @@ impl Image {
 
 		self.data = idata;		
 	}
+	
 
 	pub fn get_width(&self) -> u32 { self.width }
 	pub fn get_height(&self) -> u32 { self.height }
@@ -78,14 +80,14 @@ mod tests {
 	}
 
 	#[test]
-	fn test_resize() {
+	fn test_resize_area() {
 		let mut data = vec![0xff0000ff];
 		data.resize(1024, 0xff0000ff);
 
 		let mut i = Image::create_from_data("name_test", "name_test", 32, 32, &data);
 		assert_eq!(0xff0000ff, i.data.bdata[48], "Not correctly loaded");
 
-		i.resize(64, 64);
+		i.resize_area(64, 64);
 		assert_ne!(0xff0000ff, i.data.bdata[48], "Not correctly resized: not even resized");
 		assert_eq!(0x0, i.data.bdata[48], "Not correctly resized (garbage)");
 	}
