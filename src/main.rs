@@ -25,7 +25,8 @@ fn draw_command_line(ps1: &str) -> Option<String> {
 fn main() {
     println!("oxImage v0.1");
     println!("Copyright (c) 2017 Arthur M");
-    println!("Licensed under MIT License\n");
+    println!("Licensed under MIT License");
+    println!("Type 'help' for help\n");
 
     let root = ImageCollectionList::create("root");
     let cwd = root;
@@ -52,6 +53,11 @@ fn main() {
                 };
             }
 
+        } else if cmd == "help" {
+            println!("quit: Exit");
+            println!("pwd: Show actual collection you're in");
+            println!("ls: List collection content");
+            println!("");
         } else {
             println!(" Command {} does not exist\n", cmd);
         }
