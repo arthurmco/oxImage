@@ -5,15 +5,15 @@ use self::image::{GenericImage, Pixel};
 use super::Image;
 use super::imagedata;
 
-use std::fs::File;
 use std::path::Path;
+pub use self::image::ImageError;
 
-struct BasicImageOpener {
+pub struct BasicImageOpener {
 	filename: String,
 }
 
 impl BasicImageOpener {
-	fn openFile(filename: &str) -> Result<Image, image::ImageError> {
+	pub fn open(filename: &str) -> Result<Image, image::ImageError> {
 		let img = image::open(&Path::new(filename))?;
 		let (w, h) = img.dimensions();
 
@@ -46,7 +46,7 @@ mod tests {
 
 	#[test]
 	fn open_image_all_black() {
-		let image = BasicImageOpener::openFile("tests/testimg0.png")
+		let image = BasicImageOpener::open("tests/testimg0.png")
 			.expect("Could not open file");
 		
 		assert_eq!(640, image.get_width());
@@ -61,7 +61,7 @@ mod tests {
 
 	#[test]
 	fn open_image_all_red() {
-		let image = BasicImageOpener::openFile("tests/testimg1.png")
+		let image = BasicImageOpener::open("tests/testimg1.png")
 			.expect("Could not open file");
 		
 		assert_eq!(1280, image.get_width());
