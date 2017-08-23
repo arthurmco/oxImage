@@ -6,6 +6,12 @@ pub struct ImageData {
 	pub bdata: Vec<u32>
 }
 
+/* Pack bytes into a RHBA pixel */
+pub fn pack_pixel(r: u32, g: u32, b: u32, a: u32) -> u32 
+{
+	(a) | (b << 8) | (g << 16) | (r << 24)
+}
+
 impl ImageData {
 	/* Create an empty data */
 	pub fn create_empty(size: usize) -> ImageData {
@@ -63,6 +69,15 @@ mod tests {
 
 		assert_eq!(0x0, img.bdata[63], 
 			"Wrong behavior: non-specified pixels should be transparent (0), they are {}", img.bdata[63]);
+	}
+
+	#[test]
+	fn test_pack_pixel() {
+		assert_eq!(0, pack_pixel(0, 0, 0, 0));
+		assert_eq!(0xff000000, pack_pixel(255, 0, 0, 0));
+		assert_eq!(0x00ff0000, pack_pixel(0, 255, 0, 0));
+		assert_eq!(0x0000ff00, pack_pixel(0, 0, 255, 0));
+		assert_eq!(0x000000ff, pack_pixel(0, 0, 0, 255));
 	}
 
 	#[test]

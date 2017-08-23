@@ -31,6 +31,10 @@ impl Image {
 			height: height, data: ImageData::create_from_data(data, (width*height) as usize)}
 	}
 
+	pub fn get_pixel(&self, x: u32, y: u32) -> u32 {
+		self.data.bdata[(y*self.width + x) as usize]
+	}
+
 	pub fn resize_area(&mut self, nwidth: u32, nheight: u32) {
 		/* Resize the image area. It won't resiz any data */
 		let mut idata = ImageData::create_empty((nwidth*nheight) as usize);
